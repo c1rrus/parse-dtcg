@@ -1,0 +1,42 @@
+{
+  "name": "parse-dtcg",
+  "version": "0.0.0",
+  "description": "A basic DTCG file parser",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "clean": "del-cli dist/*",
+    "build": "tsc -p tsconfig.build.json",
+    "watch": "tsc -p tsconfig.build.json --watch",
+    "test": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/c1rrus/parse-dtcg.git"
+  },
+  "keywords": [
+    "dtcg",
+    "design",
+    "token",
+    "parser",
+    "design",
+    "system"
+  ],
+  "author": "James Nash (https://cirrus.twiddles.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/c1rrus/parse-dtcg/issues"
+  },
+  "homepage": "https://github.com/c1rrus/parse-dtcg#readme",
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10",
+    "@vitest/coverage-v8": "^2.1.6",
+    "del-cli": "^6.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.6"
+  },
+  "dependencies": {
+    "@udt/parser-utils": "^0.1.0"
+  }
+}

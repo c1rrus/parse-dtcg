@@ -9,7 +9,8 @@
     "clean": "del-cli dist/*",
     "build": "tsc -p tsconfig.build.json",
     "watch": "tsc -p tsconfig.build.json --watch",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "release": "changeset publish"
   },
   "files": [
     "dist/"

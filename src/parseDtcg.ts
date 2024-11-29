@@ -1,17 +1,18 @@
 import {
-  extractProperties,
   parseData,
+  type AddChildFn,
   type PlainObject,
 } from "@udt/parser-utils";
-import { applyInheritedProps } from "./inheritableProps.js";
 import {
   type NormalisedDtcgGroupProps,
   type NormalisedDtcgDesignTokenProps,
 } from "./normalisedProps.js";
 import { type DtcgFormatConfig } from "./formatConfigs/DtcgFormatConfig.js";
 import { dtcgLatestDraft } from "./formatConfigs/dtcgLatestDraft.js";
+import { parseGroupData } from "./parseGroupData.js";
+import { parseDesignTokenData } from "./parseDesignTokenData.js";
 
-export type GroupDataHandlerFn<ParsedGroup = void> = (
+export type GroupDataHandlerFn<ParsedGroup> = (
   path: string[],
   resolvedProps: NormalisedDtcgGroupProps,
   ownProps: NormalisedDtcgGroupProps,
@@ -19,7 +20,7 @@ export type GroupDataHandlerFn<ParsedGroup = void> = (
   extraneousProps: PlainObject
 ) => ParsedGroup;
 
-export type DesignTokenDataHandlerFn<ParsedDesignToken = void> = (
+export type DesignTokenDataHandlerFn<ParsedDesignToken> = (
   path: string[],
   resolvedProps: NormalisedDtcgDesignTokenProps,
   ownProps: NormalisedDtcgDesignTokenProps,
@@ -27,26 +28,20 @@ export type DesignTokenDataHandlerFn<ParsedDesignToken = void> = (
   extraneousProps: PlainObject
 ) => ParsedDesignToken;
 
-export type AddToGroupFn<ParsedDesignToken, ParsedGroup> = (
-  parent: ParsedGroup | undefined,
-  childName: string,
-  child: ParsedDesignToken | ParsedGroup
-) => void;
-
 export interface DtcgParserConfig<
   ParsedDesignToken = void,
   ParsedGroup = void
 > {
   handleDesignToken: DesignTokenDataHandlerFn<ParsedDesignToken>;
   handleGroup?: GroupDataHandlerFn<ParsedGroup>;
-  addToGroup?: AddToGroupFn<ParsedDesignToken, ParsedGroup>;
+  addToGroup?: AddChildFn<ParsedGroup, ParsedDesignToken>;
   format?: DtcgFormatConfig;
 }
 
 export function parseDtcg<ParsedDesignToken = void, ParsedGroup = void>(
   data: unknown,
   config: DtcgParserConfig<ParsedDesignToken, ParsedGroup>
-): ParsedDesignToken | ParsedGroup {
+): ParsedDesignToken | ParsedGroup | undefined {
   const formatConfig = config.format ?? dtcgLatestDraft;
   return parseData<ParsedDesignToken, ParsedGroup, NormalisedDtcgGroupProps>(
     data,
@@ -58,86 +53,26 @@ export function parseDtcg<ParsedDesignToken = void, ParsedGroup = void>(
       ],
 
       parseDesignTokenData(data, path, context) {
-        const { extracted: originalOwnProps, remainingProps } =
-          // @ts-expect-error TS2345 - need to add readonly in UDT parer-utils
-          extractProperties(data, formatConfig.designTokenProps);
-
-        const extraneousProps: PlainObject = {};
-        for (const propName of remainingProps) {
-          extraneousProps[propName] = data[propName];
-        }
-
-        const normalisedOwnProps = formatConfig.normaliseDesignTokenProps
-          ? formatConfig.normaliseDesignTokenProps(originalOwnProps)
-          : (originalOwnProps as unknown as NormalisedDtcgDesignTokenProps);
-
-        return config.handleDesignToken(
+        return parseDesignTokenData(
+          data,
           path,
-          {
-            ...normalisedOwnProps,
-            ...applyInheritedProps(
-              normalisedOwnProps,
-              context ?? {},
-              formatConfig.inheritableProps
-            ),
-          },
-          normalisedOwnProps,
-          context ?? {},
-          extraneousProps
+          context,
+          formatConfig,
+          config.handleDesignToken
         );
       },
 
       parseGroupData(data, path, context) {
-        const { extracted: groupProps, remainingProps: childNames } =
-          extractProperties(data, [
-            ...formatConfig.groupProps,
-            ...(formatConfig.extraneousGroupProps ?? []),
-          ]);
-
-        const { extracted: originalOwnProps, remainingProps } =
-          // @ts-expect-error TS2345 - need to add readonly in UDT parer-utils
-          extractProperties(groupProps, formatConfig.groupProps);
-
-        const extraneousProps: PlainObject = {};
-        for (const propName of remainingProps) {
-          extraneousProps[propName] = data[propName];
-        }
-
-        const normalisedOwnProps = formatConfig.normaliseGroupProps
-          ? formatConfig.normaliseGroupProps(originalOwnProps)
-          : (originalOwnProps as unknown as NormalisedDtcgGroupProps);
-
-        const propsToPassDown = applyInheritedProps(
-          normalisedOwnProps,
-          context ?? {},
-          formatConfig.inheritableProps
+        return parseGroupData(
+          data,
+          path,
+          context,
+          formatConfig,
+          config.handleGroup
         );
-        const parsedGroup = config.handleGroup
-          ? config.handleGroup(
-              path,
-              {
-                ...normalisedOwnProps,
-                ...propsToPassDown,
-              },
-              normalisedOwnProps,
-              propsToPassDown ?? {},
-              extraneousProps
-            )
-          : undefined;
-
-        const addToGroup = config.addToGroup;
-
-        return {
-          // TODO: Make group optional in UDT
-          group: parsedGroup as ParsedGroup,
-          addChild: addToGroup
-            ? (name, child) => {
-                addToGroup(parsedGroup, name, child);
-              }
-            : undefined,
-          contextForChildren: propsToPassDown,
-        };
       },
+
+      addChildToGroup: config.addToGroup,
     }
   );
 }

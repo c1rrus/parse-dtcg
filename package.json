@@ -1,6 +1,6 @@
 {
   "name": "dtcg-partial-parser",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A partial DTCG file parser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

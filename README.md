@@ -1,5 +1,7 @@
 # dtcg-partial-parser
 
+⚠️ **This library is in the early stages of development, so breaking changes are likely until the API stablises. Use at your own risk!**
+
 A library for partially parsing [DTCG](https://tr.designtokens.org/format/) files, which:
 
 1. traverses the DTCG data,
@@ -60,7 +62,7 @@ parseDtcg(dtcgData, {
 });
 ```
 
-Which will log something like:
+Which will log:
 
 ```
 Found token "token1" with combined props:  { '$type': 'number', '$value': 123 }
@@ -68,7 +70,6 @@ Found token "token1" with combined props:  { '$type': 'number', '$value': 123 }
 Found token "groupA.token2" with combined props:  { '$value': { value: 1.25, unit: 'em' }, '$type': 'dimension' }
 ```
 
-Note how token2 inherited its `$type` from groupA! The `combinedProps` passed into the design token handler function automatically include any inheritable properties
-from the nearest parent group (currently `$type` and `$deprecated`).
+Note how "token2" inherited its `$type` from "groupA"! The `combinedProps` passed into the design token handler function automatically include any inheritable properties from the nearest parent group (currently `$type` and `$deprecated`).
 
 You can find additional examples in the [`examples/` folder](./examples/).

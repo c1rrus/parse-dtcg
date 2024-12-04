@@ -19,6 +19,9 @@ function removeUndefinedProps<T>(input: T): Partial<T> {
 /**
  * Configures the DTCG parser to support the 1st editros draft DTCG spec (from 2021).
  *
+ * Note that format properties like `value` and `description` are
+ * **not** `$`-prefixed in this spec version.
+ *
  * @see https://first-editors-draft.tr.designtokens.org/format/
  */
 export const dtcgFirstDraft: DtcgFormatConfig = {

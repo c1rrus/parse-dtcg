@@ -1,5 +1,5 @@
 import { type IsDesignTokenDataFn } from "@udt/parser-utils";
-import { type InheritableProperties } from "../inheritableProps.js";
+import { type InheritablePropertiesConfig } from "../inheritableProps.js";
 import {
   type NormaliseGroupPropsFn,
   type NormaliseDesignTokenPropsFn,
@@ -10,7 +10,7 @@ export interface DtcgFormatConfig {
   groupProps: readonly (string | RegExp)[];
   extraneousGroupProps?: readonly (string | RegExp)[];
   designTokenProps: readonly (string | RegExp)[];
-  inheritableProps: InheritableProperties;
+  inheritableProps: InheritablePropertiesConfig;
   isDesignTokenData: IsDesignTokenDataFn;
   normaliseGroupProps?: NormaliseGroupPropsFn;
   normaliseDesignTokenProps?: NormaliseDesignTokenPropsFn;

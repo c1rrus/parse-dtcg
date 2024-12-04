@@ -1,5 +1,5 @@
 import { extractProperties, type PlainObject } from "@udt/parser-utils";
-import { applyInheritedProps } from "./inheritableProps.js";
+import { combineWithInheritedProps } from "./inheritableProps.js";
 import {
   type NormalisedDtcgDesignTokenProps,
   type NormalisedDtcgGroupProps,
@@ -7,10 +7,26 @@ import {
 import { type DtcgFormatConfig } from "./formatConfigs/DtcgFormatConfig.js";
 import { type DesignTokenDataHandlerFn } from "./parseDtcg.js";
 
+/**
+ * Normalises the input design token data, combines it with inherited
+ * props and passes the results into a user-defined design token data
+ * hander function.
+ *
+ * @private
+ *
+ * @param data  The raw input data for a single design token.
+ * @param path  The design token's path.
+ * @param inheritedProps  Inheritable props passed down from the
+ *              parent group.
+ * @param formatConfig  The format config being used by the parser.
+ * @param handleDesignToken The user-defined design token data
+ *              handler function.
+ * @returns The output of the design token data handler function.
+ */
 export function parseDesignTokenData<ParsedDesignToken>(
   data: PlainObject,
   path: string[],
-  context: NormalisedDtcgGroupProps | undefined,
+  inheritedProps: NormalisedDtcgGroupProps | undefined,
   formatConfig: DtcgFormatConfig,
   handleDesignToken: DesignTokenDataHandlerFn<ParsedDesignToken>
 ): ParsedDesignToken {
@@ -25,14 +41,14 @@ export function parseDesignTokenData<ParsedDesignToken>(
     path,
     {
       ...normalisedOwnProps,
-      ...applyInheritedProps(
+      ...combineWithInheritedProps(
         normalisedOwnProps,
-        context ?? {},
+        inheritedProps ?? {},
         formatConfig.inheritableProps
       ),
     },
     normalisedOwnProps,
-    context ?? {},
+    inheritedProps ?? {},
     extraneousProps
   );
 }

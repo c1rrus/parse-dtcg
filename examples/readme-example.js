@@ -42,4 +42,6 @@ function logDesignToken(path, combinedProps) {
 // ...you can parse the data as follows:
 parseDtcg(dtcgData, {
   handleDesignToken: logDesignToken,
+
+  handleGroup(bla, foo) {},
 });

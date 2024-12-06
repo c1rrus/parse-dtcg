@@ -24,7 +24,7 @@ function removeUndefinedProps<T>(input: T): Partial<T> {
  *
  * @see https://first-editors-draft.tr.designtokens.org/format/
  */
-export const dtcgFirstDraft: DtcgFormatConfig = {
+export const dtcgFirstDraft = {
   groupProps: dtcgCommonPropNames,
   designTokenProps: [
     ...dtcgCommonPropNames,
@@ -52,4 +52,4 @@ export const dtcgFirstDraft: DtcgFormatConfig = {
       $description: description,
     });
   },
-};
+} satisfies DtcgFormatConfig;

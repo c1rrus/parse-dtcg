@@ -12,9 +12,9 @@ import { PlainObject } from "@udt/parser-utils";
  *          down to this group's children.
  */
 export type InheritablePropValueProcessor<T = unknown> = (
-  ownValue?: T,
-  inheritedValue?: T
-) => T | undefined;
+  ownValue: T | undefined,
+  inheritedValue: T
+) => T;
 
 /**
  * Returns the group's own value, if defined, or the inherited
@@ -29,7 +29,7 @@ export type InheritablePropValueProcessor<T = unknown> = (
  * @param inheritedValue The prop's value that was passed
  *                  down from this group's parent group.
  *
- * @returns `ownValue` if defined, `inheritedValue` otherwise.
+ * @returns `ownValue`.
  */
 export const preferOwnValue: InheritablePropValueProcessor = (
   ownValue,
@@ -70,6 +70,18 @@ export function combineWithInheritedProps<OwnProps, InheritedProps>(
 ): InheritedProps {
   const result = {} as PlainObject;
   for (const propName in inheritablePropsConfig) {
+    const ownValue = ownProps[propName as keyof OwnProps];
+    const inheritedValue = inheritedProps[propName as keyof InheritedProps];
+
+    if (inheritedValue === undefined) {
+      // No point calling the value processor
+      if (ownValue !== undefined) {
+        // Just pass through ownValue
+        result[propName] = ownValue;
+      }
+      continue;
+    }
+
     const propValueProcessor = inheritablePropsConfig[propName];
     const combinedValue = propValueProcessor(
       ownProps[propName as keyof OwnProps],

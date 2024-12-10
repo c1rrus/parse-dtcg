@@ -127,7 +127,7 @@ export function parseDtcg<ParsedDesignToken = void, ParsedGroup = void>(
   data: unknown,
   config: DtcgParserConfig<ParsedDesignToken, ParsedGroup>
 ): ParsedGroup | undefined {
-  const formatConfig = config.format ?? dtcgLatestDraft;
+  const formatConfig: DtcgFormatConfig = config.format ?? dtcgLatestDraft;
   return parseData<ParsedDesignToken, ParsedGroup, NormalisedDtcgGroupProps>(
     data,
     {

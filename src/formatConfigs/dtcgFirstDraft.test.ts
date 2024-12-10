@@ -31,15 +31,6 @@ describe("normaliseDesignTokenProps()", () => {
       $extensions: {},
     });
   });
-
-  it("does not add properties with undefined values, for ones absent in the input", () => {
-    const normalisedProps = normaliseDesignTokenProps({
-      value: 123,
-    });
-    expect(normalisedProps).not.toHaveProperty("$description");
-    expect(normalisedProps).not.toHaveProperty("$type");
-    expect(normalisedProps).not.toHaveProperty("$extensions");
-  });
 });
 
 describe("normaliseGroupProps()", () => {
@@ -53,10 +44,5 @@ describe("normaliseGroupProps()", () => {
     ).toStrictEqual({
       $description: "hello",
     });
-  });
-
-  it("does not add $description property with undefined values, when the input has no description", () => {
-    const normalisedProps = normaliseGroupProps({});
-    expect(normalisedProps).not.toHaveProperty("$description");
   });
 });

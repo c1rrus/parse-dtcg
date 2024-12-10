@@ -5,6 +5,7 @@ import {
   type NormalisedDtcgGroupProps,
 } from "./normalisedProps.js";
 import { type DtcgFormatConfig } from "./formatConfigs/DtcgFormatConfig.js";
+import { removeUndefinedProps } from "./removeUndefinedProps.js";
 import { type DesignTokenDataHandlerFn } from "./parseDtcg.js";
 
 /**
@@ -34,7 +35,9 @@ export function parseDesignTokenData<ParsedDesignToken>(
     extractProperties(data, formatConfig.designTokenProps);
 
   const normalisedOwnProps = formatConfig.normaliseDesignTokenProps
-    ? formatConfig.normaliseDesignTokenProps(originalOwnProps)
+    ? (removeUndefinedProps(
+        formatConfig.normaliseDesignTokenProps(originalOwnProps)
+      ) as NormalisedDtcgDesignTokenProps)
     : (originalOwnProps as unknown as NormalisedDtcgDesignTokenProps);
 
   return handleDesignToken(

@@ -7,15 +7,6 @@ function isDesignLegacyTokenData(data: PlainObject) {
 
 const dtcgCommonPropNames = ["description"] as const;
 
-function removeUndefinedProps<T>(input: T): Partial<T> {
-  for (const propName in input) {
-    if (input[propName] === undefined) {
-      delete input[propName];
-    }
-  }
-  return input;
-}
-
 /**
  * Configures the DTCG parser to support the 1st editros draft DTCG spec (from 2021).
  *
@@ -38,18 +29,15 @@ export const dtcgFirstDraft = {
     const { value, description, type, extensions } = originalProps;
     return {
       $value: value,
-
-      ...removeUndefinedProps({
-        $description: description,
-        $type: type,
-        $extensions: extensions,
-      }),
+      $description: description,
+      $type: type,
+      $extensions: extensions,
     };
   },
   normaliseGroupProps(originalProps) {
     const { description } = originalProps;
-    return removeUndefinedProps({
+    return {
       $description: description,
-    });
+    };
   },
 } satisfies DtcgFormatConfig;

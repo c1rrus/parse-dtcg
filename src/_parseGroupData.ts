@@ -6,6 +6,7 @@ import {
 import { combineWithInheritedProps } from "./inheritableProps.js";
 import { type NormalisedDtcgGroupProps } from "./normalisedProps.js";
 import { type GroupDataHandlerFn } from "./parseDtcg.js";
+import { removeUndefinedProps } from "./removeUndefinedProps.js";
 import { type DtcgFormatConfig } from "./formatConfigs/DtcgFormatConfig.js";
 
 /**
@@ -33,11 +34,15 @@ export function parseGroupData<ParsedGroup>(
   formatConfig: DtcgFormatConfig,
   handleGroup?: GroupDataHandlerFn<ParsedGroup>
 ): ParseGroupResult<ParsedGroup, NormalisedDtcgGroupProps> {
+  const propsToExtract =
+    path.length === 0 && formatConfig.rootGroupProps !== undefined
+      ? [...formatConfig.groupProps, ...formatConfig.rootGroupProps]
+      : formatConfig.groupProps;
   const { extracted: originalOwnProps, rest: extraneousProps } =
-    extractProperties(data, formatConfig.groupProps);
+    extractProperties(data, propsToExtract);
 
   const normalisedOwnProps = formatConfig.normaliseGroupProps
-    ? formatConfig.normaliseGroupProps(originalOwnProps)
+    ? removeUndefinedProps(formatConfig.normaliseGroupProps(originalOwnProps))
     : (originalOwnProps as unknown as NormalisedDtcgGroupProps);
 
   const propsToPassDown = combineWithInheritedProps(
@@ -53,7 +58,7 @@ export function parseGroupData<ParsedGroup>(
           ...propsToPassDown,
         },
         normalisedOwnProps,
-        propsToPassDown ?? {},
+        propsToPassDown,
         extraneousProps
       )
     : undefined;

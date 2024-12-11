@@ -18,7 +18,7 @@ const dtcgCommonPropNames = [
  *
  * @see https://tr.designtokens.org/format/
  */
-export const dtcgLatestDraft: DtcgFormatConfig = {
+export const dtcgLatestDraft = {
   groupProps: dtcgCommonPropNames,
   designTokenProps: [...dtcgCommonPropNames, "$value"] as const,
   inheritableProps: {
@@ -26,4 +26,4 @@ export const dtcgLatestDraft: DtcgFormatConfig = {
     $deprecated: preferOwnValue,
   },
   isDesignTokenData,
-};
+} satisfies DtcgFormatConfig;

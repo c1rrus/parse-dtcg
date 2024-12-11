@@ -102,6 +102,14 @@ export interface DtcgParserConfig<
    * respectively. Otherwise, `addToGroup` will never be called.
    */
   addToGroup?: AddChildFn<ParsedGroup, ParsedDesignToken>;
+
+  /**
+   * The DTCG spec version that the input data conforms to.
+   *
+   * Defaults to the latest draft.
+   *
+   * @see https://tr.designtokens.org/format/
+   */
   format?: DtcgFormatConfig;
 }
 
